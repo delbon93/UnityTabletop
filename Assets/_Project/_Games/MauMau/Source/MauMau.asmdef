@@ -1,0 +1,16 @@
+{
+    "name": "MauMau",
+    "rootNamespace": "",
+    "references": [
+        "GUID:60f36737695ae694f804ebd07c79a6f2"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

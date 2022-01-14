@@ -1,0 +1,16 @@
+{
+    "name": "PlayingCards",
+    "rootNamespace": "",
+    "references": [
+        "GUID:df8d5d28b1aece04d8ba332adbe909e3"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
