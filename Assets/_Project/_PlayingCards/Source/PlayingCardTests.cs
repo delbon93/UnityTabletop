@@ -1,8 +1,8 @@
 ﻿using System.Collections;
-using _Project.Source.Common.Components.Cards;
+using PlayingCards.Components;
 using UnityEngine;
 
-namespace _Project._PlayingCards.Source {
+namespace PlayingCards {
     public class PlayingCardTests : MonoBehaviour {
         
         [SerializeField] private PlayingCardHand hand1;

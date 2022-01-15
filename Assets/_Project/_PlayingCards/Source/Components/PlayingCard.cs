@@ -1,9 +1,9 @@
 ﻿using System;
-using _Project.Source.Common.Cards;
+using _Project._PlayingCards.Source;
 using DG.Tweening;
 using UnityEngine;
 
-namespace _Project.Source.Common.Components.Cards {
+namespace PlayingCards.Components {
     [SelectionBase]
     public class PlayingCard : MonoBehaviour {
 

@@ -1,8 +1,9 @@
 ﻿using System;
+using _Project._PlayingCards.Source;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace _Project.Source.Common.Cards {
+namespace PlayingCards {
     [Serializable]
     public class Card {
 

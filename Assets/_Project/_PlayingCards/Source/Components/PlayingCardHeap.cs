@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using _Project._PlayingCards.Source;
-using _Project.Source.Common.Cards;
 using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace _Project.Source.Common.Components.Cards {
-    public class PlayingCardHeap : MonoBehaviour {
+namespace PlayingCards.Components {
+    public class PlayingCardHeap : MonoBehaviour, IPlayingCardContainerProvider {
 
         [SerializeField] private PlayingCard playingCardPrefab;
         [SerializeField] private float verticalSpaceBetweenCards = 0.0003f;

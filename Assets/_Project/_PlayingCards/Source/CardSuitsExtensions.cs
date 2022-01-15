@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace _Project.Source.Common.Cards {
+namespace PlayingCards {
     public static class CardSuitsExtensions {
         
         private static readonly Dictionary<CardSuits, string> _resourceIdMap = new Dictionary<CardSuits, string>() {

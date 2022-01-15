@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace _Project.Source.Common.Cards {
+namespace PlayingCards {
     public class CardDeck {
 
         private readonly IEnumerable<int> _initialCardIds;

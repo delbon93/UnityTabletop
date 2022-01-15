@@ -1,9 +1,6 @@
-﻿using _Project.Source.Common.Components.Cards;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace _Project._PlayingCards.Source {
-    
-    
+namespace PlayingCards {
     public class StraightCardHandPositionProvider : ICardHandPositionProvider {
         public Vector3 GetPosition (Vector3 handCenter, float cardWidth, int cardIndex, int cardCount) {
             var leftOffset = -0.25f * cardWidth * (cardCount + 1) + 0.5f * cardWidth;

@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using _Project._PlayingCards.Source;
 
-namespace _Project.Source.Common.Cards {
+namespace PlayingCards {
     public static class CardDeckFactory {
         public static CardDeck French52() => new CardDeck(Enumerable.Range(0, 52));
 
@@ -26,7 +27,9 @@ namespace _Project.Source.Common.Cards {
             }
         }
     }
+}
 
+namespace _Project._PlayingCards.Source {
     public enum CardDeckTemplates {
         
         Empty, French32, French52

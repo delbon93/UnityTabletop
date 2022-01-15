@@ -3,8 +3,8 @@ using _Project._PlayingCards.Source;
 using DG.Tweening;
 using UnityEngine;
 
-namespace _Project.Source.Common.Components.Cards {
-    public class PlayingCardHand : MonoBehaviour {
+namespace PlayingCards.Components {
+    public class PlayingCardHand : MonoBehaviour, IPlayingCardContainerProvider {
 
         [SerializeField] private bool allowCardHighlighting = false;
 

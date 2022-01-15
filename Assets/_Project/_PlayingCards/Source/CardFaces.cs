@@ -1,4 +1,4 @@
-﻿namespace _Project.Source.Common.Cards {
+﻿namespace PlayingCards {
     public enum CardFaces {
         
         Ace, Two, Three, Four, Five, Six, Seven, 

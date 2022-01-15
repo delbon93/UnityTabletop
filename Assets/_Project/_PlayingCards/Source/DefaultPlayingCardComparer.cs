@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using _Project.Source.Common.Components.Cards;
+using PlayingCards.Components;
 
-namespace _Project._PlayingCards.Source {
+namespace PlayingCards {
     public class DefaultPlayingCardComparer : IComparer<PlayingCard> {
         public int Compare (PlayingCard x, PlayingCard y) {
             return y.Card.CardId - x.Card.CardId;

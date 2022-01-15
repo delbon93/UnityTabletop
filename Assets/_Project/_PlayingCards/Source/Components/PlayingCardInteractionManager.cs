@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace _Project.Source.Common.Components.Cards {
+namespace PlayingCards.Components {
     public class PlayingCardInteractionManager : MonoBehaviour {
 
         private PlayingCard _highlightedCard = null;

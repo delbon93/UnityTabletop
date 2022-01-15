@@ -1,4 +1,4 @@
-﻿namespace _Project.Source.Common.Cards {
+﻿namespace PlayingCards {
     public enum CardSuits {
         
          Diamonds, Hearts, Spades, Clubs

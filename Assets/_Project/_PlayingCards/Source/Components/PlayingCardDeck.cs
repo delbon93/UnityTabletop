@@ -1,10 +1,9 @@
 ﻿using _Project._PlayingCards.Source;
-using _Project.Source.Common.Cards;
 using DG.Tweening;
 using UnityEngine;
 
-namespace _Project.Source.Common.Components.Cards {
-    public class PlayingCardDeck : MonoBehaviour{
+namespace PlayingCards.Components {
+    public class PlayingCardDeck : MonoBehaviour, IPlayingCardContainerProvider {
 
         [SerializeField] private PlayingCard playingCardPrefab;
         [SerializeField] private float thicknessPerCard = 0.003f;

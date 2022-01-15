@@ -2,10 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using _Project.Source.Common.Components.Cards;
+using PlayingCards.Components;
 using UnityEngine;
 
-namespace _Project._PlayingCards.Source {
+namespace PlayingCards {
     public class PlayingCardContainer : IEnumerable<PlayingCard> {
 
         private readonly List<PlayingCard> _playingCards = new List<PlayingCard>();
