@@ -1,8 +1,9 @@
 ﻿
-using _Project._PlayingCards.Source;
+using System.Collections.Generic;
+using PlayingCards.Components;
 
 namespace PlayingCards {
     public interface IPlayingCardContainerProvider {
-        public PlayingCardContainer PlayingCardContainer { get; }
+        public PlayingCardContainer CardContainer { get; }
     }
 }

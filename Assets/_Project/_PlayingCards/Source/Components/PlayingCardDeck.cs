@@ -1,5 +1,7 @@
-﻿using _Project._PlayingCards.Source;
+﻿using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
+using PlayingCards.ScriptableObjects;
 using UnityEngine;
 
 namespace PlayingCards.Components {
@@ -7,27 +9,31 @@ namespace PlayingCards.Components {
 
         [SerializeField] private PlayingCard playingCardPrefab;
         [SerializeField] private float thicknessPerCard = 0.003f;
-        [SerializeField] private CardDeckTemplates deckTemplate;
+        [SerializeField] private PlayingCardDeckTemplate deckTemplate;
 
         private Transform meshTransform => transform.Find("Mesh").transform;
 
-        public PlayingCardContainer PlayingCardContainer { get; } = new PlayingCardContainer();
+        public PlayingCardContainer CardContainer { get; } = new PlayingCardContainer();
 
         private void Awake () {
-            PlayingCardContainer.ManagedTransform = transform;
-            PlayingCardContainer.OnPlayingCardEnter += (playingCard) => {
-                playingCard.LocalMoveTo(Vector3.zero, new Vector3(-180, 0, 0), 
-                    callback: () => playingCard.gameObject.SetActive(false));
+            CardContainer.ManagedTransform = transform;
+            CardContainer.OnPlayingCardEnter += (playingCard) => {
+                var seq = DOTween.Sequence();
+                seq.Append(playingCard.transform.DOMove(transform.position, 0.5f));
+                seq.Join(playingCard.transform.DOLocalRotate(new Vector3(-180, 0, 0), 0.35f));
+                seq.AppendCallback(() => playingCard.gameObject.SetActive(false));
+                seq.Play();
             };
-            PlayingCardContainer.OnPlayingCardLeave += (playingCard) => {
+            CardContainer.OnPlayingCardLeave += (playingCard) => {
                 playingCard.gameObject.SetActive(true);
             };
-            
-            var cardDeck = CardDeckFactory.CreateFromTemplate(deckTemplate);
-            foreach (var card in cardDeck.ToCardList()) {
-                var playingCard = Instantiate(playingCardPrefab);
-                playingCard.Card = card;
-                PlayingCardContainer.Put(playingCard);
+
+            if (deckTemplate != null) {
+                foreach (var card in deckTemplate.Generate()) {
+                    var playingCard = Instantiate(playingCardPrefab);
+                    playingCard.Card = card;
+                    CardContainer.Put(playingCard);
+                }
             }
         }
 
@@ -36,13 +42,13 @@ namespace PlayingCards.Components {
         }
 
         private void UpdateSize () {
-            if (PlayingCardContainer.Count == 0) {
+            if (CardContainer.Count == 0) {
                 meshTransform.gameObject.SetActive(false);
             }
             else {
                 meshTransform.gameObject.SetActive(true);
                 var newScale = meshTransform.localScale;
-                newScale.y = Mathf.Min(1f, PlayingCardContainer.Count / 30f);
+                newScale.y = Mathf.Min(1f, CardContainer.Count / 30f);
                 meshTransform.localScale = newScale;
                 
                 //meshTransform.DOLocalMoveY(newScale.y * 0.5f, 0f);

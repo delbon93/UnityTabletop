@@ -1,5 +1,4 @@
-﻿using System;
-using _Project._PlayingCards.Source;
+﻿using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
@@ -11,29 +10,31 @@ namespace PlayingCards.Components {
         private readonly ICardHandPositionProvider _cardHandPositionProvider = new StraightCardHandPositionProvider();
         private PlayingCard _raisedPlayingCard = null;
         
-        public PlayingCardContainer PlayingCardContainer { get; private set; } = new PlayingCardContainer();
+        public PlayingCardContainer CardContainer { get; private set; } = new PlayingCardContainer();
+        public IComparer<PlayingCard> SortingComparer { get; set; } = null;
 
         private void Start () {
-            PlayingCardContainer.ManagedTransform = transform;
-            PlayingCardContainer.OnPlayingCardEnter += (playingCard) => {
+            CardContainer.ManagedTransform = transform;
+            CardContainer.OnPlayingCardEnter += (playingCard) => {
+                if (SortingComparer != null) CardContainer.Sort(SortingComparer);
                 playingCard.transform.DOLocalRotate(new Vector3(-90, 0, 0), 0.5f);
                 UpdatePlayingCardPositions();
                 playingCard.OnGainHighlight += RaisePlayingCard;
                 playingCard.OnLoseHighlight += UnraisePlayingCard;
             };
-            PlayingCardContainer.OnPlayingCardLeave += (playingCard) => {
+            CardContainer.OnPlayingCardLeave += (playingCard) => {
                 UpdatePlayingCardPositions();
                 playingCard.OnGainHighlight -= RaisePlayingCard;
                 playingCard.OnLoseHighlight -= UnraisePlayingCard;
             };
-            PlayingCardContainer.OnCardOrderChange += UpdatePlayingCardPositions;
+            CardContainer.OnCardOrderChange += UpdatePlayingCardPositions;
         }
 
         private void UpdatePlayingCardPositions () {
-            var cardCount = PlayingCardContainer.Count;
+            var cardCount = CardContainer.Count;
             for (var i = 0; i < cardCount; i++) {
                 var target = _cardHandPositionProvider.GetPosition(Vector3.zero, 0.6f, i, cardCount);
-                var card = PlayingCardContainer[i];
+                var card = CardContainer[i];
                 if (card == _raisedPlayingCard) {
                     target.y += 0.35f;
                 }

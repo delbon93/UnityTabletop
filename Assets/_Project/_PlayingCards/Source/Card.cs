@@ -1,5 +1,4 @@
 ﻿using System;
-using _Project._PlayingCards.Source;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -18,8 +17,8 @@ namespace PlayingCards {
         }
 
 
-        [SerializeField] private CardFaces face;
-        [SerializeField] private CardSuits suit;
+        [SerializeField] public CardFaces face;
+        [SerializeField] public CardSuits suit;
         
         public int CardId => (int)(13 * (int)suit + face);
         public string ResourceId => face.ResourceId() + suit.ResourceId();

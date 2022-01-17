@@ -1,5 +1,4 @@
 ﻿using System;
-using _Project._PlayingCards.Source;
 using DG.Tweening;
 using UnityEngine;
 
@@ -64,7 +63,7 @@ namespace PlayingCards.Components {
             });
             seq.Play();
         }
-        
+
         private void Update () {
             #if UNITY_EDITOR
             UpdateCardTexture();

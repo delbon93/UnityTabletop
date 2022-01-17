@@ -6,7 +6,7 @@ using PlayingCards.Components;
 using UnityEngine;
 
 namespace PlayingCards {
-    public class PlayingCardContainer : IEnumerable<PlayingCard> {
+    public class PlayingCardContainer : IEnumerable<PlayingCard>, IPlayingCardContainerProvider {
 
         private readonly List<PlayingCard> _playingCards = new List<PlayingCard>();
 
@@ -17,6 +17,8 @@ namespace PlayingCards {
         public Action OnCardOrderChange { get; set; } = () => { };
 
         public int Count => _playingCards.Count;
+
+        public PlayingCardContainer CardContainer => this;
 
         public PlayingCard this [int index] => _playingCards[index];
 
@@ -33,8 +35,10 @@ namespace PlayingCards {
             var list = _playingCards.GetRange(Count - count, count);
             _playingCards.RemoveRange(Count - count, count);
             
-            list.ForEach(Unparent);
-            list.ForEach(OnPlayingCardLeave);
+            list.ForEach((playingCard) => {
+                Unparent(playingCard);
+                OnPlayingCardLeave(playingCard);
+            });
             return list;
         }
 
@@ -59,15 +63,7 @@ namespace PlayingCards {
 
         public void Put (PlayingCard playingCard) => PutAt(playingCard, Count);
 
-        public void Put (IEnumerable<PlayingCard> playingCards) {
-            var playingCardsList = playingCards.ToList();
-            
-            playingCardsList.ToList().ForEach(playingCard => {
-                _playingCards.Add(playingCard);
-                Parent(playingCard);
-                OnPlayingCardEnter(playingCard);
-            });
-        }
+        public void Put (IEnumerable<PlayingCard> playingCards) => playingCards.ToList().ForEach(Put);
 
         public void PutAt (PlayingCard playingCard, int index) {
             _playingCards.Insert(index, playingCard);
@@ -75,26 +71,29 @@ namespace PlayingCards {
             OnPlayingCardEnter(playingCard);
         }
         
-        public void TransferTo (PlayingCardContainer destination) => destination.Put(Take());
+        public void TransferTo (IPlayingCardContainerProvider destination) 
+            => destination.CardContainer.Put(Take());
 
-        public void TransferTo (PlayingCardContainer destination, int count) => destination.Put(Take(count));
+        public void TransferTo (IPlayingCardContainerProvider destination, int count) 
+            => destination.CardContainer.Put(Take(count));
 
-        public void TransferTo (PlayingCardContainer destination, PlayingCard playingCard) =>
-            destination.Put(Take(playingCard));
+        public void TransferTo (IPlayingCardContainerProvider destination, PlayingCard playingCard) =>
+            destination.CardContainer.Put(Take(playingCard));
         
-        public void TransferToAt (int sourceIndex, PlayingCardContainer destination) {
-            destination.Put(TakeAt(sourceIndex));
+        public void TransferToAt (int sourceIndex, IPlayingCardContainerProvider destination) {
+            destination.CardContainer.Put(TakeAt(sourceIndex));
         }
 
-        public void TransferToAt (PlayingCardContainer destination, int destinationIndex) {
-            destination.PutAt(Take(), destinationIndex);
+        public void TransferToAt (IPlayingCardContainerProvider destination, int destinationIndex) {
+            destination.CardContainer.PutAt(Take(), destinationIndex);
         }
 
-        public void TransferToAt (int sourceIndex, PlayingCardContainer destination, int destinationIndex) {
-            destination.PutAt(TakeAt(sourceIndex), destinationIndex);
+        public void TransferToAt (int sourceIndex, IPlayingCardContainerProvider destination, int destinationIndex) {
+            destination.CardContainer.PutAt(TakeAt(sourceIndex), destinationIndex);
         }
 
-        public void TransferAllTo (PlayingCardContainer destination) => destination.Put(TakeAll());
+        public void TransferAllTo (IPlayingCardContainerProvider destination) 
+            => destination.CardContainer.Put(TakeAll());
         
         #endregion
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using _Project._PlayingCards.Source;
-using DG.Tweening;
-using UnityEngine;
-using Random = UnityEngine.Random;
+﻿using UnityEngine;
 
 namespace PlayingCards.Components {
     public class PlayingCardHeap : MonoBehaviour, IPlayingCardContainerProvider {
@@ -16,15 +11,15 @@ namespace PlayingCards.Components {
         [SerializeField] private bool faceDown = false;
         
 
-        public PlayingCardContainer PlayingCardContainer { get; private set; } = new PlayingCardContainer();
+        public PlayingCardContainer CardContainer { get; private set; } = new PlayingCardContainer();
 
         private void Awake () {
-            PlayingCardContainer.ManagedTransform = transform;
-            PlayingCardContainer.OnPlayingCardEnter += MovePlayingCardToTargetPosition;
+            CardContainer.ManagedTransform = transform;
+            CardContainer.OnPlayingCardEnter += MovePlayingCardToTargetPosition;
         }
 
         private void MovePlayingCardToTargetPosition (PlayingCard playingCard) {
-            var targetPosition = new Vector3(0, verticalSpaceBetweenCards * PlayingCardContainer.Count, 0);
+            var targetPosition = new Vector3(0, verticalSpaceBetweenCards * CardContainer.Count, 0);
 
             var centerOffset = Random.insideUnitCircle * centerOffsetRadius;
             targetPosition.x += centerOffset.x;
