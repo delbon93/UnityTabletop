@@ -1,9 +1,10 @@
 ﻿using System;
 using DG.Tweening;
+using PlayingCards.ScriptableObjects;
 using UnityEngine;
 
 namespace PlayingCards.Components {
-    [SelectionBase]
+    [SelectionBase, RequireComponent(typeof(PlayingCardTweeningManager))]
     public class PlayingCard : MonoBehaviour {
 
         [SerializeField] private Card card;
@@ -14,6 +15,8 @@ namespace PlayingCards.Components {
         public Action<PlayingCard> OnGainHighlight { get; set; }
         public Action<PlayingCard> OnLoseHighlight { get; set; }
         public Action<PlayingCard> OnSelect { get; set; }
+
+        public PlayingCardTweeningManager TweeningManager => GetComponent<PlayingCardTweeningManager>();
         
         public bool FaceHidden {
             get => _faceHidden;
@@ -49,19 +52,6 @@ namespace PlayingCards.Components {
             if (FaceHidden) resourceId = "2B";
             var texture = Resources.Load<Texture>($"CardTextures/{resourceId}");
             CardFaceMeshRenderer.material.mainTexture = texture;
-        }
-
-        public void LocalMoveTo (Vector3 position, Vector3 rotation, float tweenTime = 0.5f, bool hideWhileMoving = true,
-                Action callback = null) {
-            FaceHidden = true;
-            transform.DOLocalRotate(rotation, tweenTime);
-            var seq = DOTween.Sequence();
-            seq.Append(transform.DOLocalMove(position, tweenTime));
-            seq.AppendCallback(() => {
-                FaceHidden = false;
-                callback?.Invoke();
-            });
-            seq.Play();
         }
 
         private void Update () {

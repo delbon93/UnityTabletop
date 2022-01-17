@@ -30,8 +30,8 @@ namespace PlayingCards {
         private void Start () {
             hand1.OnPlayingCardSelected += OnHighlightedCardClick;
             
-            StartCoroutine(DealInTurns(2));
-            // StartCoroutine(DealSkat());
+            // StartCoroutine(DealInTurns(2));
+            StartCoroutine(DealSkat());
         }
 
         private IEnumerator DealSkat () {

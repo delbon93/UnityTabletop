@@ -18,11 +18,11 @@ namespace PlayingCards.Components {
         private void Awake () {
             CardContainer.ManagedTransform = transform;
             CardContainer.OnPlayingCardEnter += (playingCard) => {
-                var seq = DOTween.Sequence();
-                seq.Append(playingCard.transform.DOMove(transform.position, 0.5f));
-                seq.Join(playingCard.transform.DOLocalRotate(new Vector3(-180, 0, 0), 0.35f));
-                seq.AppendCallback(() => playingCard.gameObject.SetActive(false));
-                seq.Play();
+                playingCard.TweeningManager.GlobalMoveAndLocalRotate(
+                    targetPosition: transform.position,
+                    targetEulerAngles: new Vector3(-180, 0, 0),
+                    sequenceCallback: () => playingCard.gameObject.SetActive(false)
+                );
             };
             CardContainer.OnPlayingCardLeave += (playingCard) => {
                 playingCard.gameObject.SetActive(true);
@@ -50,8 +50,6 @@ namespace PlayingCards.Components {
                 var newScale = meshTransform.localScale;
                 newScale.y = Mathf.Min(1f, CardContainer.Count / 30f);
                 meshTransform.localScale = newScale;
-                
-                //meshTransform.DOLocalMoveY(newScale.y * 0.5f, 0f);
             }
         }
         
