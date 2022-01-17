@@ -7,7 +7,7 @@ namespace PlayingCards {
             var step = cardWidth * 0.5f;
             var zStep = -0.0005f;
             
-            return new Vector3(leftOffset + cardIndex * step, 0, cardIndex * zStep);
+            return handCenter + new Vector3(leftOffset + cardIndex * step, 0, cardIndex * zStep);
         }
     }
 }
