@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ namespace PlayingCards.Components {
         
         public PlayingCardContainer CardContainer { get; private set; } = new PlayingCardContainer();
         public IComparer<PlayingCard> SortingComparer { get; set; } = null;
+        public Action<PlayingCard> OnPlayingCardSelected { get; set; }
 
         private void Start () {
             CardContainer.ManagedTransform = transform;
@@ -21,11 +23,13 @@ namespace PlayingCards.Components {
                 UpdatePlayingCardPositions();
                 playingCard.OnGainHighlight += RaisePlayingCard;
                 playingCard.OnLoseHighlight += UnraisePlayingCard;
+                playingCard.OnSelect += OnPlayingCardSelected;
             };
             CardContainer.OnPlayingCardLeave += (playingCard) => {
                 UpdatePlayingCardPositions();
                 playingCard.OnGainHighlight -= RaisePlayingCard;
                 playingCard.OnLoseHighlight -= UnraisePlayingCard;
+                playingCard.OnSelect -= OnPlayingCardSelected;
             };
             CardContainer.OnCardOrderChange += UpdatePlayingCardPositions;
         }

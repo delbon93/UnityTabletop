@@ -1148,7 +1148,7 @@ PrefabInstance:
     - target: {fileID: 2040386682562524378, guid: da24caf88d28f3141b509940afffcdd7, type: 3}
       propertyPath: deckTemplate
       value: 
-      objectReference: {fileID: 11400000, guid: 6538de839f6a4954ab9ce6f0848b5ffe, type: 2}
+      objectReference: {fileID: 11400000, guid: a5661befd93279346869361659b389b3, type: 2}
     - target: {fileID: 2040386682562524379, guid: da24caf88d28f3141b509940afffcdd7, type: 3}
       propertyPath: m_RootOrder
       value: 5

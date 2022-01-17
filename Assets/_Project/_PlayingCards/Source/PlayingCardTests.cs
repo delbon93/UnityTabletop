@@ -19,7 +19,6 @@ namespace PlayingCards {
         
 
         private bool clickAllowed = false;
-        private SkatPlayingCardComparer _skatComparer = new SkatPlayingCardComparer();
 
         private void OnHighlightedCardClick (PlayingCard playingCard) {
             if (!clickAllowed) return;
@@ -29,23 +28,19 @@ namespace PlayingCards {
         }
         
         private void Start () {
-            hand1.CardContainer.OnPlayingCardEnter += card => {
-                card.OnSelect += OnHighlightedCardClick;
-            };
-            hand1.CardContainer.OnPlayingCardLeave += card => {
-                card.OnSelect -= OnHighlightedCardClick;
-            };
-            hand1.SortingComparer = _skatComparer;
+            hand1.OnPlayingCardSelected += OnHighlightedCardClick;
             
-            // StartCoroutine(DealInTurns(3));
-            StartCoroutine(DealSkat());
+            StartCoroutine(DealInTurns(2));
+            // StartCoroutine(DealSkat());
         }
 
         private IEnumerator DealSkat () {
+            var skatComparer = new SkatPlayingCardComparer();
+            hand1.SortingComparer = skatComparer;
             deck1.CardContainer.Shuffle();
             var trumpSuit = (CardSuits)Random.Range(0, 4);
             playingCard1.Card = new Card(CardFaces.Ace, trumpSuit);
-            _skatComparer.trumpSuit = trumpSuit;
+            skatComparer.trumpSuit = trumpSuit;
             
             yield return new WaitForSeconds(1.5f);
 
@@ -90,6 +85,10 @@ namespace PlayingCards {
 
         private IEnumerator DealInTurns (int cardsPerTurn) {
             var hands = new[] { hand1, hand2, hand3 };
+            var comparer = new DefaultPlayingCardComparer();
+            foreach (var hand in hands) {
+                hand.SortingComparer = comparer;
+            }
             var handIndex = 0;
 
             deck1.CardContainer.Shuffle();

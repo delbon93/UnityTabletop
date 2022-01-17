@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 namespace PlayingCards.DeckTemplates {
     [Serializable]
     public class CardTemplateGeneratorProperty : ICardTemplateGenerator {
 
-        public CardTemplateGenerators templateGeneratorType;
+        public CardTemplateGeneratorType templateGeneratorType;
 
         public AllSuitsOfFacesTemplateGenerator allSuitsOfFacesTemplateGenerator = 
             new AllSuitsOfFacesTemplateGenerator();
@@ -13,10 +14,13 @@ namespace PlayingCards.DeckTemplates {
         public AllFacesOfSuitsTemplateGenerator allFacesOfSuitsTemplateGenerator =
             new AllFacesOfSuitsTemplateGenerator();
 
+        public CardListTemplateGenerator cardListTemplateGenerator = new CardListTemplateGenerator();
+
         public List<Card> Generate () {
             return templateGeneratorType switch {
-                CardTemplateGenerators.AllSuitsOfFaces => allSuitsOfFacesTemplateGenerator.Generate(),
-                CardTemplateGenerators.AllFacesOfSuits => allFacesOfSuitsTemplateGenerator.Generate(),
+                CardTemplateGeneratorType.AllSuitsOfFaces => allSuitsOfFacesTemplateGenerator.Generate(),
+                CardTemplateGeneratorType.AllFacesOfSuits => allFacesOfSuitsTemplateGenerator.Generate(),
+                CardTemplateGeneratorType.CardList => cardListTemplateGenerator.Generate(),
                 _ => new List<Card>()
             };
         }
