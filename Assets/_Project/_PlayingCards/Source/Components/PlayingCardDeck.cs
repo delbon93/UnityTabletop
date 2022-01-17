@@ -5,6 +5,7 @@ using PlayingCards.ScriptableObjects;
 using UnityEngine;
 
 namespace PlayingCards.Components {
+    [RequireComponent(typeof(PlayingCardContainer))]
     public class PlayingCardDeck : MonoBehaviour, IPlayingCardContainerProvider {
 
         [SerializeField] private PlayingCard playingCardPrefab;
@@ -13,10 +14,10 @@ namespace PlayingCards.Components {
 
         private Transform meshTransform => transform.Find("Mesh").transform;
 
-        public PlayingCardContainer CardContainer { get; } = new PlayingCardContainer();
+        public PlayingCardContainer CardContainer { get; private set; }
 
         private void Awake () {
-            CardContainer.ManagedTransform = transform;
+            CardContainer = GetComponent<PlayingCardContainer>();
             CardContainer.OnPlayingCardEnter += (playingCard) => {
                 playingCard.TweeningManager.GlobalMoveAndLocalRotate(
                     targetPosition: transform.position,

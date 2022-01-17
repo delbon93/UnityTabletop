@@ -6,11 +6,9 @@ using PlayingCards.Components;
 using UnityEngine;
 
 namespace PlayingCards {
-    public class PlayingCardContainer : IEnumerable<PlayingCard>, IPlayingCardContainerProvider {
+    public class PlayingCardContainer : MonoBehaviour, IEnumerable<PlayingCard>, IPlayingCardContainerProvider {
 
         private readonly List<PlayingCard> _playingCards = new List<PlayingCard>();
-
-        public Transform ManagedTransform { get; set; } = null;
 
         public Action<PlayingCard> OnPlayingCardEnter { get; set; } = (playingCard) => { };
         public Action<PlayingCard> OnPlayingCardLeave { get; set; } = (playingCard) => { };
@@ -22,10 +20,6 @@ namespace PlayingCards {
 
         public PlayingCard this [int index] => _playingCards[index];
 
-        public PlayingCardContainer (Transform managedTransform = null) {
-            ManagedTransform = managedTransform;
-        }
-        
         #region Move Methods
 
         public PlayingCard Take () => TakeAt(Count - 1);
@@ -116,7 +110,7 @@ namespace PlayingCards {
         }
 
         private void Parent (PlayingCard playingCard) {
-            playingCard.transform.SetParent(ManagedTransform);
+            playingCard.transform.SetParent(transform);
         }
 
         private void Unparent (PlayingCard playingCard) {

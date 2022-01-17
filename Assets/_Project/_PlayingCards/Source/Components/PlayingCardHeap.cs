@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using PlayingCards.ScriptableObjects;
+using UnityEngine;
 
 namespace PlayingCards.Components {
+    [RequireComponent(typeof(PlayingCardContainer))]
     public class PlayingCardHeap : MonoBehaviour, IPlayingCardContainerProvider {
 
         [SerializeField] private PlayingCard playingCardPrefab;
@@ -11,10 +13,10 @@ namespace PlayingCards.Components {
         [SerializeField] private bool faceDown = false;
         
 
-        public PlayingCardContainer CardContainer { get; private set; } = new PlayingCardContainer();
+        public PlayingCardContainer CardContainer { get; private set; }
 
         private void Awake () {
-            CardContainer.ManagedTransform = transform;
+            CardContainer = GetComponent<PlayingCardContainer>();
             CardContainer.OnPlayingCardEnter += MovePlayingCardToTargetPosition;
         }
 

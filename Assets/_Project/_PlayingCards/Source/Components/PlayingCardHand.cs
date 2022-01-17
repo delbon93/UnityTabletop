@@ -4,6 +4,7 @@ using DG.Tweening;
 using UnityEngine;
 
 namespace PlayingCards.Components {
+    [RequireComponent(typeof(PlayingCardContainer))]
     public class PlayingCardHand : MonoBehaviour, IPlayingCardContainerProvider {
 
         [SerializeField] private bool allowCardHighlighting = false;
@@ -11,12 +12,12 @@ namespace PlayingCards.Components {
         private readonly ICardHandPositionProvider _cardHandPositionProvider = new StraightCardHandPositionProvider();
         private PlayingCard _raisedPlayingCard = null;
         
-        public PlayingCardContainer CardContainer { get; private set; } = new PlayingCardContainer();
+        public PlayingCardContainer CardContainer { get; private set; }
         public IComparer<PlayingCard> SortingComparer { get; set; } = null;
         public Action<PlayingCard> OnPlayingCardSelected { get; set; }
 
         private void Start () {
-            CardContainer.ManagedTransform = transform;
+            CardContainer = GetComponent<PlayingCardContainer>();
             CardContainer.OnPlayingCardEnter += (playingCard) => {
                 if (SortingComparer != null) CardContainer.Sort(SortingComparer);
                 // playingCard.transform.DOLocalRotate(new Vector3(-90, 0, 0), 0.5f);
