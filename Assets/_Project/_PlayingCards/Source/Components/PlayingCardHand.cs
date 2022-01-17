@@ -19,7 +19,8 @@ namespace PlayingCards.Components {
             CardContainer.ManagedTransform = transform;
             CardContainer.OnPlayingCardEnter += (playingCard) => {
                 if (SortingComparer != null) CardContainer.Sort(SortingComparer);
-                playingCard.transform.DOLocalRotate(new Vector3(-90, 0, 0), 0.5f);
+                // playingCard.transform.DOLocalRotate(new Vector3(-90, 0, 0), 0.5f);
+                playingCard.TweeningManager.LocalRotate(new Vector3(-90, 0, 0));
                 UpdatePlayingCardPositions();
                 playingCard.OnGainHighlight += RaisePlayingCard;
                 playingCard.OnLoseHighlight += UnraisePlayingCard;
@@ -42,7 +43,8 @@ namespace PlayingCards.Components {
                 if (card == _raisedPlayingCard) {
                     target.y += 0.35f;
                 }
-                card.transform.DOLocalMove(target, 0.5f);
+
+                card.TweeningManager.LocalMove(target);
             }
         }
 

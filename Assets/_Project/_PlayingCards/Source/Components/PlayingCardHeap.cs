@@ -31,7 +31,7 @@ namespace PlayingCards.Components {
                 targetRotation.z = 180;
             }
             
-            playingCard.LocalMoveTo(targetPosition, targetRotation);
+            playingCard.TweeningManager.LocalMoveAndLocalRotate(targetPosition, targetRotation);
         }
         
     }
