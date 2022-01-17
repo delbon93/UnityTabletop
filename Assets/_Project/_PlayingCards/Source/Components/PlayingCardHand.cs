@@ -4,7 +4,7 @@ using DG.Tweening;
 using UnityEngine;
 
 namespace PlayingCards.Components {
-    public class PlayingCardHand : MonoBehaviour, IPlayingCardContainerProvider {
+    public class PlayingCardHand : MonoBehaviour, IPlayingCardContainerProvider, IManageCardChildrenInEditMode {
 
         [SerializeField] private bool allowCardHighlighting = false;
 
@@ -61,5 +61,27 @@ namespace PlayingCards.Components {
             UpdatePlayingCardPositions();
         }
 
+        public void OnEditModePlayingCardGained (PlayingCard playingCard) {
+            CardContainer.Put(playingCard);
+        }
+
+        public void OnEditModePlayingCardLost (PlayingCard playingCard) {
+            CardContainer.Take(playingCard);
+        }
+
+        public void OnEditModeStart (IEnumerable<PlayingCard> playingCardChildren) {
+            print("Test: Start");
+            Start();
+            CardContainer.Put(playingCardChildren);
+        }
+
+        public void OnPlayModeStart (IEnumerable<PlayingCard> playingCardChildren) {
+            CardContainer.Put(playingCardChildren);
+        }
+
+        public void OnEditModeUpdate () {
+            print("Test: Update");
+            UpdatePlayingCardPositions();
+        }
     }
 }
