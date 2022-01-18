@@ -2,7 +2,8 @@
     "name": "MauMau",
     "rootNamespace": "",
     "references": [
-        "GUID:60f36737695ae694f804ebd07c79a6f2"
+        "GUID:60f36737695ae694f804ebd07c79a6f2",
+        "GUID:df8d5d28b1aece04d8ba332adbe909e3"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

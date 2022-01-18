@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9137788666987919362}
   - component: {fileID: 9137788666987919361}
+  - component: {fileID: 653702176}
   m_Layer: 0
   m_Name: PlayingCardManager
   m_TagString: Untagged
@@ -43,3 +44,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d782484749f7485aa593b2118d7d5260, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &653702176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9137788666987919420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b504c06f3ae94b2c9955bf4f695d27b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playingCardPrefab: {fileID: 876724802949960783, guid: 63a09015816109c44a7dff37ea0450a2, type: 3}

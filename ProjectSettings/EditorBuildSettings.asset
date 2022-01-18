@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/_Project/_Games/MauMau/MauMau.unity
+    guid: fe0b0ae7e8bc7b64892cff123426e9b7
   m_configObjects: {}

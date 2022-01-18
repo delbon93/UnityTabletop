@@ -13,7 +13,7 @@ namespace Games.MauMau.Source {
         }
 
         private void OnMouseDown () {
-            MauMauManager.instance.DrawToPlayerHandIfAllowed(_deck.CardContainer);
+            MauMauManager.instance.DrawToPlayerHandIfAllowed();
         }
         
     }

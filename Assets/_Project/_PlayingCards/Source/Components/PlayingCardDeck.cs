@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using _Project._PlayingCards.Source.Components;
 using DG.Tweening;
 using PlayingCards.ScriptableObjects;
 using UnityEngine;
@@ -12,7 +13,7 @@ namespace PlayingCards.Components {
         [SerializeField] private float thicknessPerCard = 0.003f;
         [SerializeField] private PlayingCardDeckTemplate deckTemplate;
 
-        private Transform meshTransform => transform.Find("Mesh").transform;
+        private Transform MeshTransform => transform.Find("Mesh").transform;
 
         public PlayingCardContainer CardContainer { get; private set; }
 
@@ -31,8 +32,7 @@ namespace PlayingCards.Components {
 
             if (deckTemplate != null) {
                 foreach (var card in deckTemplate.Generate()) {
-                    var playingCard = Instantiate(playingCardPrefab);
-                    playingCard.Card = card;
+                    var playingCard = PlayingCardFactory.instance.CreateInstance(card, transform.position);
                     CardContainer.Put(playingCard);
                 }
             }
@@ -44,13 +44,13 @@ namespace PlayingCards.Components {
 
         private void UpdateSize () {
             if (CardContainer.Count == 0) {
-                meshTransform.gameObject.SetActive(false);
+                MeshTransform.gameObject.SetActive(false);
             }
             else {
-                meshTransform.gameObject.SetActive(true);
-                var newScale = meshTransform.localScale;
+                MeshTransform.gameObject.SetActive(true);
+                var newScale = MeshTransform.localScale;
                 newScale.y = Mathf.Min(1f, CardContainer.Count / 30f);
-                meshTransform.localScale = newScale;
+                MeshTransform.localScale = newScale;
             }
         }
         
