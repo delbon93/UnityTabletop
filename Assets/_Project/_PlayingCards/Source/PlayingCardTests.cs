@@ -4,7 +4,7 @@ using PlayingCards.Components;
 using UnityEngine;
 
 namespace PlayingCards {
-    public class PlayingCardTests : MonoBehaviour {
+    internal class PlayingCardTests : MonoBehaviour {
         
         [SerializeField] private PlayingCardHand hand1;
         [SerializeField] private PlayingCardHand hand2;

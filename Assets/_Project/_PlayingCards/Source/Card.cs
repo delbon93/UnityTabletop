@@ -16,7 +16,6 @@ namespace PlayingCards {
             return Card.ConstructFromCardId(Random.Range(0, 52));
         }
 
-
         [SerializeField] public CardFaces face;
         [SerializeField] public CardSuits suit;
         

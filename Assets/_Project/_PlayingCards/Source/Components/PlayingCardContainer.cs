@@ -20,6 +20,9 @@ namespace PlayingCards {
 
         public PlayingCard this [int index] => _playingCards[index];
 
+        public PlayingCard First => Count > 0 ? this[0] : null;
+        public PlayingCard Last => Count > 0 ? this[Count - 1] : null;
+
         #region Move Methods
 
         public PlayingCard Take () => TakeAt(Count - 1);
