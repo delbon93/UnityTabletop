@@ -6,29 +6,40 @@ using UnityEngine;
 
 namespace Games.MauMau.Source {
     public class MauMauUIManager : MonoBehaviour {
+        
         public const string PlayerTag = "$player$";
 
         [Serializable]
-        public struct PlayerName {
+        public struct PlayerInfo {
             public PlayingCardHand player;
             public string name;
+            public Color color;
         }
 
-        [SerializeField] private List<PlayerName> playerNames;
+        
+        [SerializeField] private List<PlayerInfo> playerNames;
+        [SerializeField] private EventLog eventLogUi;
         
 
         public void Log (PlayingCardHand player, string message) {
-            var playerName = GetPlayerName(player);
-            print(message.Replace(PlayerTag, playerName));
+            var preppedMessage = ReplacePlaceholders(GetPlayerInfo(player), message);
+            print($"[EventLog] {preppedMessage}");
+            eventLogUi.AddLine(preppedMessage);
         }
 
         public void Log (string message) => Log(null, message);
 
-        private string GetPlayerName (PlayingCardHand player) {
-            foreach (var playerName in playerNames.Where(playerName => playerName.player == player))
-                return playerName.name;
+        private string ReplacePlaceholders (PlayerInfo player, string str) {
+            var colorCode = GetRichTextColorCode(player.color);
+            return str.Replace(PlayerTag, $"<color={colorCode}>{player.name}</color>");
+        }
 
-            return "Unknown Player";
+        private static string GetRichTextColorCode (Color color) => $"#{ColorUtility.ToHtmlStringRGB(color)}";
+
+        private PlayerInfo GetPlayerInfo (PlayingCardHand player) {
+            foreach (var playerName in playerNames.Where(playerName => playerName.player == player))
+                return playerName;
+            return default;
         }
         
     }

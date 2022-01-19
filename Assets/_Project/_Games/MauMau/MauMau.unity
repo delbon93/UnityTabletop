@@ -454,7 +454,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -867,10 +867,14 @@ MonoBehaviour:
   playerNames:
   - player: {fileID: 1254297927657560940}
     name: Player
+    color: {r: 0, g: 1, b: 0, a: 0}
   - player: {fileID: 1598712112}
     name: AI Left
+    color: {r: 1, g: 0, b: 0, a: 0}
   - player: {fileID: 29794182}
     name: AI Right
+    color: {r: 0, g: 0, b: 1, a: 0}
+  eventLogUi: {fileID: 1457739155}
 --- !u!114 &695281626 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 876724802949960783, guid: 63a09015816109c44a7dff37ea0450a2, type: 3}
@@ -1395,6 +1399,8 @@ GameObject:
   - component: {fileID: 1457739152}
   - component: {fileID: 1457739154}
   - component: {fileID: 1457739153}
+  - component: {fileID: 1457739156}
+  - component: {fileID: 1457739155}
   m_Layer: 5
   m_Name: EventLogPanel
   m_TagString: Untagged
@@ -1459,6 +1465,47 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1457739151}
   m_CullTransparentMesh: 1
+--- !u!114 &1457739155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1457739151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ca51e1b2a844aa0acec7e8dc52a2ab2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logLinePrefab: {fileID: 2016204810898293912, guid: a207073aa5e604b4192d11cf1d76d925, type: 3}
+  maxNumberOfLines: 11
+  showTimestamps: 1
+--- !u!114 &1457739156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1457739151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 6
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &1484851432
 GameObject:
   m_ObjectHideFlags: 0
@@ -1565,7 +1612,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 876724802949960777, guid: 63a09015816109c44a7dff37ea0450a2, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 876724802949960782, guid: 63a09015816109c44a7dff37ea0450a2, type: 3}
       propertyPath: m_RootOrder

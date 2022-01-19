@@ -52,7 +52,7 @@ namespace Games.MauMau.Source {
         
 
         private void Start () {
-            
+            suitIndicator.gameObject.SetActive(false);
             suitSelector.OnPlayingCardSelected += OnPlayerSelectSuit;
             suitSelector.CardContainer.Put(PlayingCardFactory.instance.CreateInstances(new [] {
                 new Card(CardFaces.Jack, CardSuits.Clubs),
@@ -129,6 +129,7 @@ namespace Games.MauMau.Source {
                 IncreaseActivePlayerIndex();
             }
 
+            _uiManager.Log("------------------");
             yield return new WaitForSeconds(3f);
             StartCoroutine(ResetGame());
         }
@@ -210,7 +211,7 @@ namespace Games.MauMau.Source {
             }
         }
 
-        private IEnumerator DrawFromDeck (IPlayingCardContainerProvider target) {
+        private IEnumerator DrawFromDeck (IPlayingCardContainerProvider target, bool suppressLog = false) {
             if (cardDeck.CardContainer.Count == 0) {
                 var topCard = trickHeap.CardContainer.Take();
                 trickHeap.CardContainer.TransferAllTo(cardDeck);
@@ -220,7 +221,7 @@ namespace Games.MauMau.Source {
             }
             
             cardDeck.CardContainer.TransferTo(target);
-            _uiManager.Log(ActivePlayerHand, "$player$ draws a card");
+            if (!suppressLog) _uiManager.Log(ActivePlayerHand, "$player$ draws a card");
         }
 
         private IEnumerator PlayCard (IPlayingCardContainerProvider source, PlayingCard playingCard) {
@@ -233,19 +234,19 @@ namespace Games.MauMau.Source {
             else {
                 switch (playingCard.Card.face) {
                     case CardFaces.Seven: {
+                        _uiManager.Log(NextPlayerHand, "$player$ has to draw two cards!");
                         yield return new WaitForSeconds(0.5f);
                         var playerToDraw = NextPlayerHand;
                         for (var i = 0; i < 2; i++) {
-                            yield return DrawFromDeck(playerToDraw);
+                            yield return DrawFromDeck(playerToDraw, suppressLog: true);
                             yield return new WaitForSeconds(0.1f);
                         }
 
-                        _uiManager.Log(NextPlayerHand, "$player$ has to draw two cards!");
                         break;
                     }
                     case CardFaces.Eight:
-                        IncreaseActivePlayerIndex();
                         _uiManager.Log(NextPlayerHand, "$player$ will be skipped!");
+                        IncreaseActivePlayerIndex();
                         break;
                     case CardFaces.Ace:
                         _uiManager.Log(ActivePlayerHand, "$player$ can go again!");
