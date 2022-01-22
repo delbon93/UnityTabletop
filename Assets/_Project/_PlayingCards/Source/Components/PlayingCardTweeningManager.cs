@@ -2,7 +2,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace PlayingCards {
+namespace PlayingCards.Components {
     public class PlayingCardTweeningManager : MonoBehaviour {
         public float DefaultTweenTime { get; set; } = 0.5f;
 
@@ -13,11 +13,13 @@ namespace PlayingCards {
                 transform.localPosition = targetPosition;
         }
 
-        public void LocalRotate (Vector3 targetEulerAngles) {
+        public void LocalRotate (Vector3 targetEulerAngles, Action sequenceCallback = null) {
             if (Application.IsPlaying(gameObject))
-                transform.DOLocalRotate(targetEulerAngles, DefaultTweenTime);
-            else
+                transform.DOLocalRotate(targetEulerAngles, DefaultTweenTime).OnComplete(() => sequenceCallback?.Invoke());
+            else {
                 transform.localRotation = Quaternion.Euler(targetEulerAngles);
+                sequenceCallback?.Invoke();
+            }
         }
 
         public void GlobalMove (Vector3 targetPosition) {
@@ -57,6 +59,12 @@ namespace PlayingCards {
                 transform.localRotation = Quaternion.Euler(targetEulerAngles);
                 sequenceCallback?.Invoke();
             }
+        }
+
+        public void Flip (Action sequenceCallback = null) {
+            var rotation = transform.rotation.eulerAngles;
+            rotation.z = (rotation.z + 180) % 360;
+            LocalRotate(rotation, sequenceCallback);
         }
     }
 }

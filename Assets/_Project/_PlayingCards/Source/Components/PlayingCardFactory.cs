@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using PlayingCards;
-using PlayingCards.Components;
 using UnityEngine;
 
-namespace _Project._PlayingCards.Source.Components {
+namespace PlayingCards.Components {
     public class PlayingCardFactory : MonoBehaviour {
 
         public static PlayingCardFactory instance;

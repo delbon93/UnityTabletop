@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using _Project._PlayingCards.Source.Components;
 using DG.Tweening;
 using PlayingCards;
 using PlayingCards.Components;

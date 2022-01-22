@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 
 namespace Games.MauMau.Source {
     public class EventLog : MonoBehaviour {
         
-        private static int lineId = 0;
-
         [SerializeField] private TextMeshProUGUI logLinePrefab;
         [SerializeField] private int maxNumberOfLines = 11;
         [SerializeField] private bool showTimestamps = false;

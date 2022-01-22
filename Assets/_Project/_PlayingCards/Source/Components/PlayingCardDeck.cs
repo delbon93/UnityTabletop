@@ -1,16 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using _Project._PlayingCards.Source.Components;
-using DG.Tweening;
-using PlayingCards.ScriptableObjects;
+﻿using PlayingCards.ScriptableObjects;
 using UnityEngine;
 
 namespace PlayingCards.Components {
     [RequireComponent(typeof(PlayingCardContainer))]
     public class PlayingCardDeck : MonoBehaviour, IPlayingCardContainerProvider {
 
-        [SerializeField] private PlayingCard playingCardPrefab;
-        [SerializeField] private float thicknessPerCard = 0.003f;
         [SerializeField] private PlayingCardDeckTemplate deckTemplate;
 
         private Transform MeshTransform => transform.Find("Mesh").transform;

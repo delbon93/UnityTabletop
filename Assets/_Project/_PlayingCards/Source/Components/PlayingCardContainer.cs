@@ -2,10 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using PlayingCards.Components;
 using UnityEngine;
 
-namespace PlayingCards {
+namespace PlayingCards.Components {
     public class PlayingCardContainer : MonoBehaviour, IEnumerable<PlayingCard>, IPlayingCardContainerProvider {
 
         private readonly List<PlayingCard> _playingCards = new List<PlayingCard>();
