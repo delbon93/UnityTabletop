@@ -6,10 +6,7 @@ namespace PlayingCards {
 
         [SerializeField] private PlayingCardRow cardRow;
 
-        private PlayingCardFactory _playingCardFactory;
-
         private void Start () {
-            _playingCardFactory = FindObjectOfType<PlayingCardFactory>();
             
             cardRow.CardContainer.OnPlayingCardEnter += card => {
                 if (Random.value < 0.5f) card.TweeningManager.Flip();
@@ -18,7 +15,7 @@ namespace PlayingCards {
         }
 
         private void AddRandomCardToRow () {
-            var card = _playingCardFactory.CreateInstance(Card.ConstructRandom(), Vector3.left * 5);
+            var card = PlayingCardFactory.instance.CreateInstance(Card.ConstructRandom(), Vector3.left * 5);
             cardRow.CardContainer.Put(card);
         }
         

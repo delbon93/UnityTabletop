@@ -6,36 +6,36 @@ using PlayingCards;
 using PlayingCards.Components;
 using UnityEngine;
 
-namespace Games.MauMau.Source {
+namespace Games.MauMau {
     public class MauMauManager : MonoBehaviour {
 
         public static MauMauManager instance;
 
+        [SerializeField] private ClientPlayerInterface clientPlayer;
+
         [SerializeField] private PlayingCardDeck cardDeck;
-        [SerializeField] private List<PlayingCardHand> cardHands;
-        [SerializeField] private PlayingCardHand suitSelector;
         [SerializeField] private PlayingCard suitIndicator;
         
         [SerializeField] private PlayingCardHeap trickHeap;
         [SerializeField] private Transform deckDealingPosition;
         [SerializeField] private int startingHandSize = 6;
+        
+        [SerializeField] private List<APlayerInterface> players;
 
-        private bool _isPlayerTurn;
-        private bool _hasPlayerActed;
-        private bool _shouldPlayerDraw;
-        private bool _hasSelectedSuit;
-        private PlayingCard _pendingCardToPlay;
         private bool _isGameOver;
-        private CardSuits? _selectedJackSuit = null;
+        public CardSuits? SelectedJackSuit { get; set; } = null;
 
         private RandomAudioClipPlayer _audioPlayer;
         private MauMauUIManager _uiManager;
 
         private int _activePlayerIndex = 0;
 
-        private PlayingCardHand PlayerHand => cardHands[0];
-        private PlayingCardHand ActivePlayerHand => cardHands[_activePlayerIndex];
-        private PlayingCardHand NextPlayerHand => cardHands[(_activePlayerIndex + 1) % cardHands.Count];
+
+        public PlayingCardDeck CardDeck => cardDeck;
+        public PlayingCard SuitIndicator => suitIndicator;
+        public PlayingCardHeap CardHeap => trickHeap;
+        public APlayerInterface ActivePlayer => players[_activePlayerIndex];
+        public APlayerInterface NextPlayer => players[(_activePlayerIndex + 1) % players.Count];
 
 
         private void Awake () {
@@ -45,37 +45,25 @@ namespace Games.MauMau.Source {
         }
 
         public void DrawToPlayerHandIfAllowed () {
-            if (!_isPlayerTurn) return;
-            _shouldPlayerDraw = true;
+            clientPlayer.SetShouldDrawFlag();
         }
-        
 
         private void Start () {
             suitIndicator.gameObject.SetActive(false);
-            suitSelector.OnPlayingCardSelected += OnPlayerSelectSuit;
-            suitSelector.CardContainer.Put(PlayingCardFactory.instance.CreateInstances(new [] {
-                new Card(CardFaces.Jack, CardSuits.Clubs),
-                new Card(CardFaces.Jack, CardSuits.Spades),
-                new Card(CardFaces.Jack, CardSuits.Hearts),
-                new Card(CardFaces.Jack, CardSuits.Diamonds),
-            }));
-            suitSelector.gameObject.SetActive(false);
-            
-            PlayerHand.OnPlayingCardSelected = OnPlayerSelectCard;
             Invoke(nameof(SetupAudioPlayer), 0.5f);
             StartCoroutine(ResetGame());
         }
 
         private void SetupAudioPlayer () {
             cardDeck.CardContainer.OnPlayingCardLeave += card => _audioPlayer.Play();
-            foreach (var hand in cardHands) hand.CardContainer.OnPlayingCardLeave += card => _audioPlayer.Play();
+            foreach (var player in players) 
+                player.PlayerInfo.hand.CardContainer.OnPlayingCardLeave += card => _audioPlayer.Play();
             trickHeap.CardContainer.OnPlayingCardLeave += card => _audioPlayer.Play();
         }
 
         private IEnumerator ResetGame () {
             _isGameOver = false;
-            _isPlayerTurn = false;
-            _selectedJackSuit = null;
+            SelectedJackSuit = null;
             yield return new WaitForSeconds(1f);
             _uiManager.Log("Dealing a new round");
 
@@ -85,7 +73,7 @@ namespace Games.MauMau.Source {
                 yield return new WaitForSeconds(0.5f);
             }
             
-            cardHands.ForEach(hand => hand.CardContainer.TransferAllTo(cardDeck));
+            players.ForEach(player => player.PlayerInfo.hand.CardContainer.TransferAllTo(cardDeck));
             trickHeap.CardContainer.TransferAllTo(cardDeck);
             cardDeck.CardContainer.Shuffle();
 
@@ -104,8 +92,8 @@ namespace Games.MauMau.Source {
             yield return new WaitForSeconds(1f);
 
             for (var i = 0; i < startingHandSize; i++) {
-                foreach (var hand in cardHands) {
-                    cardDeck.CardContainer.TransferTo(hand);
+                foreach (var player in players) {
+                    cardDeck.CardContainer.TransferTo(player.PlayerInfo.hand);
                     yield return new WaitForSeconds(0.25f);
                 }
             }
@@ -119,12 +107,11 @@ namespace Games.MauMau.Source {
                 yield return new WaitForSeconds(0.5f);
             }
             
-            _uiManager.Log(ActivePlayerHand, "The game starts. $player$ begins.");
+            _uiManager.Log(ActivePlayer.PlayerInfo, "The game starts. $player$ begins.");
 
             while (!_isGameOver) {
-                if (ActivePlayerHand == PlayerHand) yield return PlayerTurn();
-                else yield return AITurn(ActivePlayerHand);
-                if (_isGameOver) _uiManager.Log(ActivePlayerHand, "$player$ wins!");
+                yield return ActivePlayer.TakeTurn();
+                if (_isGameOver) _uiManager.Log(ActivePlayer.PlayerInfo, "$player$ wins!");
                 IncreaseActivePlayerIndex();
             }
 
@@ -133,61 +120,7 @@ namespace Games.MauMau.Source {
             StartCoroutine(ResetGame());
         }
 
-        private IEnumerator AITurn (IPlayingCardContainerProvider aiHand) {
-            yield return new WaitForSeconds(1.25f);
-            var playableCards = aiHand.CardContainer.Where(CanBePlayed).ToList();
-            
-            if (playableCards.Count > 0) {
-                var chosenCard = playableCards[Random.Range(0, playableCards.Count)];
-                yield return PlayCard(aiHand, chosenCard);
-            }
-            else {
-                yield return DrawFromDeck(aiHand);
-            }
-
-            yield return new WaitForSeconds(0.5f);
-        }
-
-        private IEnumerator PlayerTurn () {
-            _isPlayerTurn = true;
-
-            while (!_hasPlayerActed) {
-                if (_shouldPlayerDraw) {
-                    _shouldPlayerDraw = false;
-                    yield return DrawFromDeck(PlayerHand);
-                    _hasPlayerActed = true;
-                }
-                else if (_pendingCardToPlay != null) {
-                    _hasPlayerActed = true;
-                    yield return PlayCard(PlayerHand, _pendingCardToPlay);
-                    _pendingCardToPlay = null;
-                }
-
-                yield return null;
-            }
-            
-            _isPlayerTurn = false;
-            _hasPlayerActed = false;
-            yield return new WaitForSeconds(0.5f);
-        }
-
-        private void OnPlayerSelectCard (PlayingCard playingCard) {
-            if (!_isPlayerTurn) return;
-            
-            if (CanBePlayed(playingCard)) {
-                _pendingCardToPlay = playingCard;
-            }
-            else {
-                playingCard.transform.DOShakePosition(0.75f, new Vector3(0.06f, 0, 0), randomness: 0f);
-            }
-        }
-
-        private void OnPlayerSelectSuit (PlayingCard suitRepresentingCard) {
-            _selectedJackSuit = suitRepresentingCard.Card.suit;
-            _hasSelectedSuit = true;
-        }
-
-        private bool CanBePlayed (PlayingCard playingCard) {
+        internal bool CanBePlayed (PlayingCard playingCard) {
             // No top card means no restrictions
             if (trickHeap.CardContainer.Count == 0) return true;
 
@@ -201,8 +134,8 @@ namespace Games.MauMau.Source {
                     var expectedFace = trickHeap.CardContainer.Last.Card.face;
                     
                     // Jacks have selected suit or natural suit if they are the first card before play
-                    if (_selectedJackSuit != null)
-                        expectedSuit = _selectedJackSuit ?? CardSuits.Clubs;
+                    if (SelectedJackSuit != null)
+                        expectedSuit = SelectedJackSuit ?? CardSuits.Clubs;
                     
                     // Otherwise suits or faces must match
                     return playingCard.Card.face == expectedFace || playingCard.Card.suit == expectedSuit;
@@ -210,7 +143,7 @@ namespace Games.MauMau.Source {
             }
         }
 
-        private IEnumerator DrawFromDeck (IPlayingCardContainerProvider target, bool suppressLog = false) {
+        internal IEnumerator DrawFromDeck (IPlayingCardContainerProvider target, bool suppressLog = false) {
             if (cardDeck.CardContainer.Count == 0) {
                 var topCard = trickHeap.CardContainer.Take();
                 trickHeap.CardContainer.TransferAllTo(cardDeck);
@@ -220,10 +153,10 @@ namespace Games.MauMau.Source {
             }
             
             cardDeck.CardContainer.TransferTo(target);
-            if (!suppressLog) _uiManager.Log(ActivePlayerHand, "$player$ draws a card");
+            if (!suppressLog) _uiManager.Log(ActivePlayer.PlayerInfo, "$player$ draws a card");
         }
 
-        private IEnumerator PlayCard (IPlayingCardContainerProvider source, PlayingCard playingCard) {
+        internal IEnumerator PlayCard (IPlayingCardContainerProvider source, PlayingCard playingCard) {
             HideSuitIndicator();
             source.CardContainer.TransferTo(trickHeap, playingCard);
             
@@ -233,33 +166,28 @@ namespace Games.MauMau.Source {
             else {
                 switch (playingCard.Card.face) {
                     case CardFaces.Seven: {
-                        _uiManager.Log(NextPlayerHand, "$player$ has to draw two cards!");
+                        _uiManager.Log(NextPlayer.PlayerInfo, "$player$ has to draw two cards!");
                         yield return new WaitForSeconds(0.5f);
-                        var playerToDraw = NextPlayerHand;
+                        var playerToDraw = NextPlayer;
                         for (var i = 0; i < 2; i++) {
-                            yield return DrawFromDeck(playerToDraw, suppressLog: true);
+                            yield return DrawFromDeck(playerToDraw.PlayerInfo.hand, suppressLog: true);
                             yield return new WaitForSeconds(0.1f);
                         }
 
                         break;
                     }
                     case CardFaces.Eight:
-                        _uiManager.Log(NextPlayerHand, "$player$ will be skipped!");
+                        _uiManager.Log(NextPlayer.PlayerInfo, "$player$ will be skipped!");
                         IncreaseActivePlayerIndex();
                         break;
                     case CardFaces.Ace:
-                        _uiManager.Log(ActivePlayerHand, "$player$ can go again!");
+                        _uiManager.Log(ActivePlayer.PlayerInfo, "$player$ can go again!");
                         DecreaseActivePlayerIndex();
                         break;
                     case CardFaces.Jack:
-                        if (_isPlayerTurn) {
-                            yield return PlayerSelectJackSuit();
-                        }
-                        else {
-                            yield return AISelectJackSuit(ActivePlayerHand);
-                        }
+                        yield return ActivePlayer.SelectJackSuit();
 
-                        _uiManager.Log(ActivePlayerHand, $"$player$ choses {_selectedJackSuit}!");
+                        _uiManager.Log(ActivePlayer.PlayerInfo, $"$player$ choses {SelectedJackSuit}!");
                         ShowSuitIndicator();
                         yield return new WaitForSeconds(0.5f);
                         break;
@@ -267,52 +195,21 @@ namespace Games.MauMau.Source {
             }
         }
 
-        private IEnumerator PlayerSelectJackSuit () {
-            _hasSelectedSuit = false;
-            suitSelector.gameObject.SetActive(true);
-            while (!_hasSelectedSuit) yield return null;
-            suitSelector.gameObject.SetActive(false);
-        }
-
-        private IEnumerator AISelectJackSuit (IPlayingCardContainerProvider activePlayerHand) {
-            var counts = new Dictionary<CardSuits, int> {
-                { CardSuits.Clubs, 0 },
-                { CardSuits.Diamonds, 0 },
-                { CardSuits.Hearts, 0 },
-                { CardSuits.Spades, 0 },
-            };
-
-            foreach (var playingCard in activePlayerHand.CardContainer) {
-                counts[playingCard.Card.suit]++;
-            }
-
-            var maxSuit = CardSuits.Clubs;
-            var maxCount = 0;
-            foreach (var suit in counts.Keys) {
-                if (counts[suit] <= maxCount) continue;
-                maxCount = counts[suit];
-                maxSuit = suit;
-            }
-
-            _selectedJackSuit = maxSuit;
-            yield return null;
-        }
-
         private void ShowSuitIndicator () {
             suitIndicator.Card.face = CardFaces.Jack;
-            suitIndicator.Card.suit = _selectedJackSuit ?? CardSuits.Clubs;
+            suitIndicator.Card.suit = SelectedJackSuit ?? CardSuits.Clubs;
             suitIndicator.gameObject.SetActive(true);
         }
 
         private void HideSuitIndicator () {
-            _selectedJackSuit = null;
+            SelectedJackSuit = null;
             suitIndicator.gameObject.SetActive(false);
         }
 
-        private void IncreaseActivePlayerIndex () => _activePlayerIndex = (_activePlayerIndex + 1) % cardHands.Count;
+        private void IncreaseActivePlayerIndex () => _activePlayerIndex = (_activePlayerIndex + 1) % players.Count;
 
         private void DecreaseActivePlayerIndex () =>
-            _activePlayerIndex = (_activePlayerIndex == 0) ? cardHands.Count - 1 : _activePlayerIndex - 1;
+            _activePlayerIndex = (_activePlayerIndex == 0) ? players.Count - 1 : _activePlayerIndex - 1;
 
     }
 }
