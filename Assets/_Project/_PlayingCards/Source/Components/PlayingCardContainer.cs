@@ -111,6 +111,15 @@ namespace PlayingCards.Components {
             OnCardOrderChange();
         }
 
+        public void Clear () {
+            while (_playingCards.Count > 0) Take();
+        }
+
+        public void ClearAndDeleteAll () {
+            _playingCards.ForEach(playingCard => Destroy(playingCard.gameObject));
+            _playingCards.Clear();
+        }
+
         private void Parent (PlayingCard playingCard) {
             playingCard.transform.SetParent(transform);
         }

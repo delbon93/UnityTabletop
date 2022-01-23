@@ -29,13 +29,14 @@ namespace Games.MauMau {
         private MauMauUIManager _uiManager;
 
         private int _activePlayerIndex = 0;
-
+        private int _nextPlayerStartIndex = 0;
 
         public PlayingCardDeck CardDeck => cardDeck;
         public PlayingCard SuitIndicator => suitIndicator;
         public PlayingCardHeap CardHeap => trickHeap;
         public APlayerInterface ActivePlayer => players[_activePlayerIndex];
         public APlayerInterface NextPlayer => players[(_activePlayerIndex + 1) % players.Count];
+        public int CardsToDrawOnForce { get; set; } = 2;
 
 
         private void Awake () {
@@ -63,6 +64,8 @@ namespace Games.MauMau {
 
         private IEnumerator ResetGame () {
             _isGameOver = false;
+            _activePlayerIndex = _nextPlayerStartIndex;
+            _nextPlayerStartIndex = (_nextPlayerStartIndex + 1) % players.Count;
             SelectedJackSuit = null;
             yield return new WaitForSeconds(1f);
             _uiManager.Log("Dealing a new round");
@@ -166,14 +169,8 @@ namespace Games.MauMau {
             else {
                 switch (playingCard.Card.face) {
                     case CardFaces.Seven: {
-                        _uiManager.Log(NextPlayer.PlayerInfo, "$player$ has to draw two cards!");
-                        yield return new WaitForSeconds(0.5f);
-                        var playerToDraw = NextPlayer;
-                        for (var i = 0; i < 2; i++) {
-                            yield return DrawFromDeck(playerToDraw.PlayerInfo.hand, suppressLog: true);
-                            yield return new WaitForSeconds(0.1f);
-                        }
-
+                        yield return NextPlayer.ForcedDrawOrCounter(
+                            playingCard1 => playingCard1.Card.face == CardFaces.Seven);
                         break;
                     }
                     case CardFaces.Eight:
@@ -193,6 +190,22 @@ namespace Games.MauMau {
                         break;
                 }
             }
+        }
+
+        internal void SuccessfulCounter (PlayerInfo player) {
+            IncreaseActivePlayerIndex();
+            _uiManager.Log(player, $"$player$ counters forced draw!");
+            CardsToDrawOnForce += 2;
+        }
+
+        internal IEnumerator ForcedDraw (PlayerInfo player) {
+            _uiManager.Log(player, $"$player$ has to draw {CardsToDrawOnForce} cards!");
+            for (var i = 0; i < CardsToDrawOnForce; i++) {
+                yield return DrawFromDeck(player.hand, suppressLog: true);
+                yield return new WaitForSeconds(0.1f);
+            }
+            
+            CardsToDrawOnForce = 2;
         }
 
         private void ShowSuitIndicator () {

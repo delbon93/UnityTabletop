@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using PlayingCards;
 using PlayingCards.Components;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Games.MauMau {
     public class AIPlayerInterface : APlayerInterface {
@@ -46,6 +48,19 @@ namespace Games.MauMau {
             Manager.SelectedJackSuit = maxSuit;
             yield return null;
         }
-        
+
+        public override IEnumerator ForcedDrawOrCounter (Func<PlayingCard, bool> counterCardsSelector) {
+            var possibleCounters = PlayerInfo.hand.CardContainer.Where(counterCardsSelector).ToList();
+            yield return new WaitForSeconds(1.5f);
+
+            if (possibleCounters.Count == 0) {
+                yield return Manager.ForcedDraw(PlayerInfo);
+            }
+            else {
+                Manager.SuccessfulCounter(PlayerInfo);
+                yield return Manager.PlayCard(PlayerInfo.hand, possibleCounters[Random.Range(0, possibleCounters.Count)]);
+            }
+            
+        }
     }
 }

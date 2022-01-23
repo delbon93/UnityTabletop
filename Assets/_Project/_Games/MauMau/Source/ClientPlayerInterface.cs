@@ -1,30 +1,31 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Codice.Client.BaseCommands.Import;
 using DG.Tweening;
+using PlasticGui;
 using PlayingCards;
 using PlayingCards.Components;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace Games.MauMau {
     public class ClientPlayerInterface : APlayerInterface {
 
-        [SerializeField] private PlayingCardHand suitSelector;
+        [FormerlySerializedAs("suitSelector")] [SerializeField] private PlayingCardHand selectorHand;
         
-        private bool _hasSelectedSuit;
+        private bool _hasSelectedCard;
         private bool _isPlayerTurn;
         private bool _hasPlayerActed;
         private bool _shouldPlayerDraw;
         private PlayingCard _pendingCardToPlay;
+        private PlayingCard _selectedCounterCard;
         
         private void Start () {
-            suitSelector.OnPlayingCardSelected += OnPlayerSelectSuit;
-            suitSelector.CardContainer.Put(PlayingCardFactory.instance.CreateInstances(new [] {
-                new Card(CardFaces.Jack, CardSuits.Clubs),
-                new Card(CardFaces.Jack, CardSuits.Spades),
-                new Card(CardFaces.Jack, CardSuits.Hearts),
-                new Card(CardFaces.Jack, CardSuits.Diamonds),
-            }));
-            suitSelector.gameObject.SetActive(false);
+            
+            selectorHand.gameObject.SetActive(false);
             
             PlayerInfo.hand.OnPlayingCardSelected = OnPlayerSelectCard;
         }
@@ -54,10 +55,47 @@ namespace Games.MauMau {
         }
 
         public override IEnumerator SelectJackSuit () {
-            _hasSelectedSuit = false;
-            suitSelector.gameObject.SetActive(true);
-            while (!_hasSelectedSuit) yield return null;
-            suitSelector.gameObject.SetActive(false);
+            _hasSelectedCard = false;
+            selectorHand.CardContainer.ClearAndDeleteAll();
+            selectorHand.OnPlayingCardSelected += OnPlayerSelectSuit;
+            selectorHand.CardContainer.Put(PlayingCardFactory.instance.CreateInstances(new [] {
+                new Card(CardFaces.Jack, CardSuits.Clubs),
+                new Card(CardFaces.Jack, CardSuits.Spades),
+                new Card(CardFaces.Jack, CardSuits.Hearts),
+                new Card(CardFaces.Jack, CardSuits.Diamonds),
+            }));
+            selectorHand.gameObject.SetActive(true);
+            while (!_hasSelectedCard) yield return null;
+            selectorHand.OnPlayingCardSelected -= OnPlayerSelectSuit;
+            selectorHand.gameObject.SetActive(false);
+        }
+
+        public override IEnumerator ForcedDrawOrCounter (Func<PlayingCard, bool> counterCardsSelector) {
+            var possibleCounters = PlayerInfo.hand.CardContainer.Where(counterCardsSelector).ToList();
+
+            if (possibleCounters.Count == 0) {
+                yield return Manager.ForcedDraw(PlayerInfo);
+            }
+            else {
+                yield return SelectCounterCard(possibleCounters);
+                Manager.SuccessfulCounter(PlayerInfo);
+                yield return Manager.PlayCard(PlayerInfo.hand, _selectedCounterCard);
+            }
+        }
+
+        private IEnumerator SelectCounterCard (List<PlayingCard> possibleCounters) {
+            _hasSelectedCard = false;
+            selectorHand.CardContainer.ClearAndDeleteAll();
+            selectorHand.OnPlayingCardSelected += OnPlayerSelectCounterCard;
+            foreach (var possibleCounter in possibleCounters) {
+                PlayerInfo.hand.CardContainer.TransferTo(selectorHand, possibleCounter);
+                yield return new WaitForSeconds(0.1f);
+            }
+            selectorHand.gameObject.SetActive(true);
+            while (!_hasSelectedCard) yield return null;
+            selectorHand.CardContainer.TransferAllTo(PlayerInfo.hand);
+            selectorHand.OnPlayingCardSelected -= OnPlayerSelectCounterCard;
+            selectorHand.gameObject.SetActive(false);
         }
 
         public void SetShouldDrawFlag () {
@@ -66,7 +104,12 @@ namespace Games.MauMau {
         
         private void OnPlayerSelectSuit (PlayingCard suitRepresentingCard) {
             Manager.SelectedJackSuit = suitRepresentingCard.Card.suit;
-            _hasSelectedSuit = true;
+            _hasSelectedCard = true;
+        }
+
+        private void OnPlayerSelectCounterCard (PlayingCard counterCard) {
+            _selectedCounterCard = counterCard;
+            _hasSelectedCard = true;
         }
         
         private void OnPlayerSelectCard (PlayingCard playingCard) {
@@ -79,6 +122,6 @@ namespace Games.MauMau {
                 playingCard.transform.DOShakePosition(0.75f, new Vector3(0.06f, 0, 0), randomness: 0f);
             }
         }
-        
+
     }
 }

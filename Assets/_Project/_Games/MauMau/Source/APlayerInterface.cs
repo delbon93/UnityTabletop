@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using PlayingCards.Components;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ namespace Games.MauMau {
 
         public abstract IEnumerator TakeTurn ();
         public abstract IEnumerator SelectJackSuit ();
+        public abstract IEnumerator ForcedDrawOrCounter (Func<PlayingCard, bool> counterCardsSelector);
 
     }
 }
