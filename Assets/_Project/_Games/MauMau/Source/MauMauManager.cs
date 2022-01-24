@@ -209,8 +209,7 @@ namespace Games.MauMau {
         }
 
         private void ShowSuitIndicator () {
-            suitIndicator.Card.face = CardFaces.Jack;
-            suitIndicator.Card.suit = SelectedJackSuit ?? CardSuits.Clubs;
+            suitIndicator.Card = new Card(CardFaces.Jack, SelectedJackSuit ?? CardSuits.Clubs);
             suitIndicator.gameObject.SetActive(true);
         }
 
