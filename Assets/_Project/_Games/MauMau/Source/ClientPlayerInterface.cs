@@ -75,7 +75,7 @@ namespace Games.MauMau {
             }
             else {
                 yield return SelectCounterCard(possibleCounters);
-                Manager.SuccessfulCounter(PlayerInfo);
+                Manager.TriggerSuccessfulCounter(PlayerInfo);
                 yield return Manager.PlayCard(PlayerInfo.hand, _selectedCounterCard);
             }
         }
@@ -112,7 +112,7 @@ namespace Games.MauMau {
         private void OnPlayerSelectCard (PlayingCard playingCard) {
             if (!_isPlayerTurn) return;
             
-            if (Manager.CanBePlayed(playingCard)) {
+            if (Manager.IsCardPlayable(playingCard)) {
                 _pendingCardToPlay = playingCard;
             }
             else {

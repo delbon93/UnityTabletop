@@ -7,7 +7,7 @@ using PlayingCards.Components;
 using UnityEngine;
 
 namespace Games.MauMau {
-    public class MauMauManager : MonoBehaviour {
+    public class MauMauManager : MonoBehaviour, IMauMauManager {
 
         public static MauMauManager instance;
 
@@ -123,7 +123,7 @@ namespace Games.MauMau {
             StartCoroutine(ResetGame());
         }
 
-        internal bool CanBePlayed (PlayingCard playingCard) {
+        public bool IsCardPlayable (PlayingCard playingCard) {
             // No top card means no restrictions
             if (trickHeap.CardContainer.Count == 0) return true;
 
@@ -146,7 +146,7 @@ namespace Games.MauMau {
             }
         }
 
-        internal IEnumerator DrawFromDeck (IPlayingCardContainerProvider target, bool suppressLog = false) {
+        public IEnumerator DrawFromDeck (IPlayingCardContainerProvider target, bool suppressLog = false) {
             if (cardDeck.CardContainer.Count == 0) {
                 var topCard = trickHeap.CardContainer.Take();
                 trickHeap.CardContainer.TransferAllTo(cardDeck);
@@ -159,7 +159,7 @@ namespace Games.MauMau {
             if (!suppressLog) _uiManager.Log(ActivePlayer.PlayerInfo, "$player$ draws a card");
         }
 
-        internal IEnumerator PlayCard (IPlayingCardContainerProvider source, PlayingCard playingCard) {
+        public IEnumerator PlayCard (IPlayingCardContainerProvider source, PlayingCard playingCard) {
             HideSuitIndicator();
             source.CardContainer.TransferTo(trickHeap, playingCard);
             
@@ -192,13 +192,13 @@ namespace Games.MauMau {
             }
         }
 
-        internal void SuccessfulCounter (PlayerInfo player) {
+        public void TriggerSuccessfulCounter (PlayerInfo player) {
             IncreaseActivePlayerIndex();
             _uiManager.Log(player, $"$player$ counters forced draw!");
             CardsToDrawOnForce += 2;
         }
 
-        internal IEnumerator ForcedDraw (PlayerInfo player) {
+        public IEnumerator ForcedDraw (PlayerInfo player) {
             _uiManager.Log(player, $"$player$ has to draw {CardsToDrawOnForce} cards!");
             for (var i = 0; i < CardsToDrawOnForce; i++) {
                 yield return DrawFromDeck(player.hand, suppressLog: true);

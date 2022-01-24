@@ -12,7 +12,7 @@ namespace Games.MauMau {
 
         public override IEnumerator TakeTurn () {
             yield return new WaitForSeconds(1.25f);
-            var playableCards = PlayerInfo.hand.CardContainer.Where(Manager.CanBePlayed).ToList();
+            var playableCards = PlayerInfo.hand.CardContainer.Where(Manager.IsCardPlayable).ToList();
             
             if (playableCards.Count > 0) {
                 var chosenCard = playableCards[Random.Range(0, playableCards.Count)];
@@ -57,7 +57,7 @@ namespace Games.MauMau {
                 yield return Manager.ForcedDraw(PlayerInfo);
             }
             else {
-                Manager.SuccessfulCounter(PlayerInfo);
+                Manager.TriggerSuccessfulCounter(PlayerInfo);
                 yield return Manager.PlayCard(PlayerInfo.hand, possibleCounters[Random.Range(0, possibleCounters.Count)]);
             }
             
