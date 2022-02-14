@@ -1,7 +1,5 @@
 pipeline{
-    agent {
-        label 'build.machine'
-    }
+    agent any
     
     stages{
         
