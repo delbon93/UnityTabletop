@@ -1,7 +1,7 @@
 pipeline{
     stages{
         
-        stage('Tests'){
+        stage('Tests') {
             steps {
                 script {
                     try {
@@ -17,23 +17,15 @@ pipeline{
             }
         }
       
-        stage('Build'){
+        stage('Build') {
             steps {
                 bat "develop-build_and_test.bat %PROJECT_ROOT% %BUILD_NAME% %BUILD_TARGET% %BUILD_FLAG% _unused_ testResults.xml"
             }
         }
-    }
-
-    post { 
-        success { 
-            script{
-                
-            }
-        }
-
-        failure { 
-            script{
-                
+        
+        stage('Export') {
+            steps {
+                archiveArtifacts artifacts: 'Builds/', fingerprint: true   
             }
         }
     }
